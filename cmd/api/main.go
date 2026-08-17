@@ -1,25 +1,31 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/aasif-10/Olx-API/internals/config"
+	"github.com/aasif-10/Olx-API/internals/db"
+	"github.com/aasif-10/Olx-API/internals/handlers"
 )
 
 func main() {
 
 	cfg := config.MustLoad()
 
+	_, err := db.Connect(cfg.DatabaseUrl)
+	if err != nil {
+		log.Fatalf("main.db.connect %v", err)
+	}
+
+	fmt.Println("database connected")
+	fmt.Println("starting olx server...")
+
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		w.Write([]byte(`{"status" : "all ok"}`))
-	})
+	mux.HandleFunc("GET /healthz", handlers.Health)
 
 	srv := http.Server{
 		Addr:         ":" + cfg.Port,
@@ -28,7 +34,9 @@ func main() {
 		WriteTimeout: time.Second * 30,
 		IdleTimeout:  time.Second * 60,
 	}
-	err := srv.ListenAndServe()
+
+	log.Printf("server is listening on %s", srv.Addr)
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatalf("Server error")
 	}
