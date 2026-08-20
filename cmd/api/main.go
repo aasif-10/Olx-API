@@ -23,7 +23,7 @@ func main() {
 	fmt.Println("database connected")
 	fmt.Println("starting olx server...")
 
-	mux := http.NewServeMux
+	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /healthz", handlers.Health)
 
