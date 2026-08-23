@@ -60,6 +60,5 @@ func Listings(db *sql.DB) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 
 		_ = json.NewEncoder(w).Encode(listings)
-
 	}
 }
