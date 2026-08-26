@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"log"
 	"net/http"
 	"time"
@@ -69,7 +68,6 @@ func (lh ListingHandler) Listings(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	_ = json.NewEncoder(w).Encode(listings)
 }
 
 func (lh ListingHandler) Delete(w http.ResponseWriter, r *http.Request) {
