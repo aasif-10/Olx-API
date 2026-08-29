@@ -22,7 +22,10 @@ func main() {
 		log.Fatalf("main.db.connect %v", err)
 	}
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		AddSource: true,
+	})
+	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
 	fmt.Println("database connected")
