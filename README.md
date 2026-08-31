@@ -26,7 +26,7 @@ The service is intended to solve the problem of exposing a simple, database-back
 - `godotenv` for environment variables
 - Standard library HTTP server and JSON handling
 
-## Architecture
+## Architectur
 
 The application is organized as a small layered service:
 
@@ -119,11 +119,11 @@ ENV=development
 DATABASE_URL=postgres://username:password@localhost:5432/olx_api
 ```
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `PORT` | Yes | Port used by the HTTP server. |
-| `ENV` | Yes | Runtime environment name such as `development` or `production`. |
-| `DATABASE_URL` | Yes | PostgreSQL connection string used by the application. |
+| Variable       | Required | Description                                                     |
+| -------------- | -------- | --------------------------------------------------------------- |
+| `PORT`         | Yes      | Port used by the HTTP server.                                   |
+| `ENV`          | Yes      | Runtime environment name such as `development` or `production`. |
+| `DATABASE_URL` | Yes      | PostgreSQL connection string used by the application.           |
 
 ## Running the Project
 
@@ -171,7 +171,7 @@ curl http://localhost:8080/healthz
 Example response:
 
 ```json
-{"status":"all ok"}
+{ "status": "all ok" }
 ```
 
 Possible errors:
