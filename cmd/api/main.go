@@ -24,6 +24,7 @@ func main() {
 
 	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		AddSource: true,
+		Level:     slog.LevelInfo,
 	})
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
@@ -31,7 +32,7 @@ func main() {
 	fmt.Println("database connected")
 	fmt.Println("starting olx server...")
 
-	lh := handlers.NewListingHandler(db)
+	lh := handlers.NewListingHandler(db, logger)
 
 	mux := http.NewServeMux()
 
