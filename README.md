@@ -26,7 +26,7 @@ The service is intended to solve the problem of exposing a simple, database-back
 - `godotenv` for environment variables
 - Standard library HTTP server and JSON handling
 
-## Architectur
+## Architecture
 
 The application is organized as a small layered service:
 
