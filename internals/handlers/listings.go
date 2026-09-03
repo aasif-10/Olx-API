@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/aasif-10/Olx-API/internals/httpx"
 	"github.com/aasif-10/Olx-API/internals/middlewares"
 )
 
@@ -42,7 +43,7 @@ func (lh ListingHandler) Listings(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		lh.logger.Error("listings query error", "err", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		httpx.Error(w, http.StatusInternalServerError, "Something went wrong", httpx.CodeInternalError)
 		return
 	}
 
@@ -56,7 +57,7 @@ func (lh ListingHandler) Listings(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			lh.logger.Error("row scan error", "err", err)
-			http.Error(w, "internal error", http.StatusInternalServerError)
+			httpx.Error(w, http.StatusInternalServerError, "Something went wrong", httpx.CodeInternalError)
 			return
 		}
 
@@ -68,7 +69,7 @@ func (lh ListingHandler) Listings(w http.ResponseWriter, r *http.Request) {
 	err = rows.Err()
 	if err != nil {
 		lh.logger.Error("rows error", "err", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		httpx.Error(w, http.StatusInternalServerError, "Something went wrong", httpx.CodeInternalError)
 		return
 	}
 
@@ -87,7 +88,7 @@ func (lh ListingHandler) Delete(w http.ResponseWriter, r *http.Request) {
 			DELETE FROM listing WHERE id = $1`, id)
 	if err != nil {
 		lh.logger.Error("delete", "listings", id, "request_id", requestId, "err", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
+		httpx.Error(w, http.StatusInternalServerError, "Something went wrong", httpx.CodeInternalError)
 		return
 	}
 
