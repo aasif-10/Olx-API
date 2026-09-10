@@ -44,3 +44,20 @@ func Error(w http.ResponseWriter, status int, message string, code Code) {
 
 	_ = json.NewEncoder(w).Encode(errEnv)
 }
+
+func ValidationError(w http.ResponseWriter, status int, message string, code Code, field string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+
+	err := errorPayLoad{
+		Message: message,
+		Code:    code,
+		Field:   field,
+	}
+
+	errEnv := errorEnvelop{
+		Error: err,
+	}
+
+	_ = json.NewEncoder(w).Encode(errEnv)
+}
