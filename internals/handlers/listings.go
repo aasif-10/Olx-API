@@ -112,9 +112,12 @@ func (lh ListingHandler) Create(w http.ResponseWriter, r *http.Request) {
 	err = req.Validate()
 	if err != nil {
 		var verr *ValidationError
-		errors.As(err, &verr)
 		lh.logger.Error("invalid body", "requestId", requestId, "err", err)
-		httpx.ValidationError(w, http.StatusUnprocessableEntity, err.Error(), httpx.CodeValidationFailed, verr.Field)
+		if errors.As(err, &verr) {
+			httpx.ValidationError(w, http.StatusUnprocessableEntity, err.Error(), httpx.CodeValidationFailed, verr.Field)
+		} else {
+			httpx.Error(w, http.StatusUnprocessableEntity, err.Error(), httpx.CodeValidationFailed)
+		}
 		return
 	}
 
