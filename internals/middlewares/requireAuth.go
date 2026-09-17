@@ -50,7 +50,7 @@ func RequireAuth(logger *slog.Logger, secret string) func(next http.Handler) htt
 					}
 					return []byte(secret), nil
 				},
-				jwt.WithValidMethods([]string{"HS256 "}))
+				jwt.WithValidMethods([]string{"HS256"}))
 
 			if err != nil {
 				log.Info("token rejected", "err", err)
