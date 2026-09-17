@@ -35,12 +35,13 @@ func main() {
 
 	ah := handlers.NewAuthHandler(db, logger, cfg)
 	lh := handlers.NewListingHandler(db, logger)
+	requireAuth := middlewares.RequireAuth(logger, cfg.JwtKey)
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /healthz", handlers.Health)
 	mux.HandleFunc("GET /listings", lh.Listings)
-	mux.HandleFunc("DELETE /listings/{id}", lh.Delete)
+	mux.Handle("DELETE /listings/{id}", requireAuth(http.HandlerFunc(lh.Delete)))
 	mux.HandleFunc("POST /listings", lh.Create)
 	mux.HandleFunc("POST /signup", ah.Signup)
 	mux.HandleFunc("POST /signin", ah.Signin)

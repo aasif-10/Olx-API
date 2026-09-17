@@ -7,14 +7,8 @@ import (
 	"github.com/google/uuid"
 )
 
-type ctxKey int
-
 const (
 	requestId = "X-Request-ID"
-)
-
-const (
-	requestIDKey ctxKey = iota
 )
 
 func RequestId(next http.Handler) http.Handler {
