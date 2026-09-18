@@ -86,9 +86,14 @@ func (lh ListingHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	requestId := middlewares.RequestIDFromContext(ctx)
 	id := r.PathValue("id")
-
+	userId, ok := middlewares.RequireUserIdFromContext(ctx)
+	if !ok {
+		lh.logger.Error("no userid found in context", "request_id", requestId)
+		httpx.Error(w, http.StatusInternalServerError, "something went wrong", httpx.CodeInternalError)
+		return
+	}
 	_, err := lh.db.ExecContext(ctx, `
-			DELETE FROM listing WHERE id = $1`, id)
+			DELETE FROM listing WHERE id = $1 AND user_id = $2`, id, userId)
 	if err != nil {
 		lh.logger.Error("delete", "listings", id, "request_id", requestId, "err", err)
 		httpx.Error(w, http.StatusInternalServerError, "Something went wrong", httpx.CodeInternalError)
