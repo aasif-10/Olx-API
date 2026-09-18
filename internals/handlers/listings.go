@@ -10,6 +10,7 @@ import (
 
 	"github.com/aasif-10/Olx-API/internals/httpx"
 	"github.com/aasif-10/Olx-API/internals/middlewares"
+	"github.com/google/uuid"
 )
 
 type listing struct {
@@ -18,6 +19,7 @@ type listing struct {
 	Description string    `json:"description"`
 	Price       int64     `json:"price"`
 	City        string    `json:"city"`
+	UserID      uuid.UUID `json:"user_id"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 
@@ -101,6 +103,13 @@ func (lh ListingHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	requestId := middlewares.RequestIDFromContext(ctx)
 
+	userId, ok := middlewares.RequireUserIdFromContext(ctx)
+	if !ok {
+		lh.logger.Error("no userid found in context", "request_id", requestId)
+		httpx.Error(w, http.StatusInternalServerError, "something went wrong", httpx.CodeInternalError)
+		return
+	}
+
 	var req CreateListingRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
@@ -122,9 +131,9 @@ func (lh ListingHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	row := lh.db.QueryRowContext(ctx, `
-		INSERT INTO listings (title, description, price, city) 
-		VALUES ($1, $2, $3, $4) 
-		RETURNING id, title, created_at`, req.Title, req.Description, req.Price, req.City)
+		INSERT INTO listings (user_id, title, description, price, city) 
+		VALUES ($1, $2, $3, $4, $5) 
+		RETURNING id, title, created_at`, userId, req.Title, req.Description, req.Price, req.City)
 
 	var out CreateListingResponse
 	if err = row.Scan(&out.ID, &out.Title, &out.CreatedAt); err != nil {

@@ -31,7 +31,7 @@ type errorPayLoad struct {
 
 func Error(w http.ResponseWriter, status int, message string, code Code) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusInternalServerError)
+	w.WriteHeader(status)
 
 	err := errorPayLoad{
 		Message: message,
