@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"log/slog"
@@ -12,6 +13,7 @@ import (
 	"github.com/aasif-10/Olx-API/internals/db"
 	"github.com/aasif-10/Olx-API/internals/handlers"
 	"github.com/aasif-10/Olx-API/internals/middlewares"
+	"github.com/aasif-10/Olx-API/internals/storage"
 )
 
 func main() {
@@ -30,11 +32,23 @@ func main() {
 	logger := slog.New(logHandler)
 	slog.SetDefault(logger)
 
+	store, err := storage.NewSupabase(context.TODO(), storage.SupabaseConfig{
+		ProjectId:    cfg.StorageProjectId,
+		AccessKey:    cfg.StorageAccessKey,
+		AccessSecret: cfg.StorageAccessSecret,
+		Bucket:       cfg.StorageBucket,
+	})
+	if err != nil {
+		log.Fatalf("main.storage.supabase %v", err)
+	}
+
+	fmt.Println("storage initiliased...")
 	fmt.Println("database connected")
 	fmt.Println("starting olx server...")
 
 	ah := handlers.NewAuthHandler(db, logger, cfg)
 	lh := handlers.NewListingHandler(db, logger)
+	uh := handlers.NewUploadHandler(logger, store)
 	requireAuth := middlewares.RequireAuth(logger, cfg.JwtKey)
 
 	mux := http.NewServeMux()
@@ -45,6 +59,7 @@ func main() {
 	mux.Handle("POST /listings", requireAuth(http.HandlerFunc(lh.Create)))
 	mux.HandleFunc("POST /signup", ah.Signup)
 	mux.HandleFunc("POST /signin", ah.Signin)
+	mux.Handle("POST /upload/presign", requireAuth(http.HandlerFunc(uh.Presign)))
 
 	handler := middlewares.RequestId(mux)
 
